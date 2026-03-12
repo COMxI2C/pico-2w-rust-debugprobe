@@ -1,112 +1,208 @@
 # Pico 2W Rust Debug Probe
 
-This project demonstrates how to transform two **Raspberry Pi Pico 2W** boards into a complete **Serial Wire Debug (SWD) debugging environment** for ARM microcontrollers using **Rust** and **probe-rs**.
+This project shows how to build a **low-cost SWD debugging environment** using two **Raspberry Pi Pico 2W (RP2350)** boards.
 
-**SWD (Serial Wire Debug)** is the standard debugging interface used by most **ARM Cortex-M microcontrollers**, allowing developers to **flash firmware, halt execution, inspect memory, set breakpoints, and perform real-time debugging**.
+**Serial Wire Debug (SWD)** is the standard debugging interface used by ARM Cortex-M microcontrollers.
+With SWD you can:
+
+* flash firmware
+* halt execution
+* inspect memory
+* set breakpoints
+* capture logs (RTT / defmt)
 
 In this setup:
 
-* One **Pico 2W** acts as the **debug probe**
-* The second **Pico 2W** acts as the **target microcontroller**
+* One **Pico 2W acts as the debug probe**
+* One **Pico 2W acts as the target microcontroller**
 
-Using the open-source **probe-rs ecosystem**, this configuration enables a fully functional **embedded debugging workflow** without requiring commercial debug hardware such as ST-Link or J-Link.
-
-This repository provides:
-
-* A **step-by-step hardware setup**
-* The **precompiled firmware** required for the debug probe
-* The **wiring configuration** between probe and target
-* The **Rust-based debugging workflow** using probe-rs
-
-The goal is to build a **low-cost, open-source debugging platform** while exploring the internals of **SWD communication and Rust embedded tooling**.
+The system uses **probe-rs**, a modern Rust-based debugging toolkit.
 
 ---
 
-## Hardware Setup
+# Hardware Setup
 
-![Hardware Setup](docs/images/hardware_setup_pico.jpeg)
+Two Raspberry Pi Pico 2W boards are required.
 
-Two Pico boards are connected using the **SWD interface**.
+One board will run the **debugprobe firmware**, while the second board will be the **target**.
 
-One board acts as the **debug probe**, while the second board is the **target device**.
+Both boards must be powered through USB.
 
 ---
 
-## Download Precompiled Firmware
+# Installing probe-rs
 
-You can download the compiled debug probe firmware here:
+Install probe-rs tools:
+
+```bash
+curl -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
+```
+
+Verify installation:
+
+```bash
+probe-rs --version
+```
+
+---
+
+# Flashing the Debug Probe Firmware
+
+The debug probe Pico must be flashed with the firmware provided by Raspberry Pi.
+
+Download from:
 
 https://github.com/raspberrypi/debugprobe/releases
 
-Flash the firmware into the Pico that will act as the **debug probe**.
+The required file is:
+
+```
+debugprobe_on_pico2.uf2
+```
+
+Steps:
+
+1. Put the Pico into **BOOTSEL mode**
+2. Connect it via USB
+3. Drag the file **debugprobe_on_pico2.uf2** to the mounted USB drive (RP2350)
+
+After flashing, reconnect the board.
 
 ---
 
-## Hardware Required
+# Wiring
 
-* 2 × Raspberry Pi Pico 2W
-* Breadboard
-* Jumper wires
-* USB cables
+Connect the debug probe to the target using SWD.
 
----
+| Debug Probe | Target |
+| ----------- | ------ |
+| GP3         | SWDIO  |
+| GP2         | SWCLK  |
+| GND         | GND    |
 
-## Wiring
-
-| Debug Probe | Target Pico |
-| ----------- | ----------- |
-| SWDIO       | SWDIO       |
-| SWCLK       | SWCLK       |
-| GND         | GND         |
+Both boards must remain connected to the PC via USB.
 
 ---
 
-## Software Stack
+# Verifying the Debug Probe
 
-This project uses:
-
-* Rust
-* cargo
-* probe-rs
-* probe-rs-tools
-
----
-
-## Flashing Example
-
-Example command using probe-rs:
+Check that the debug probe is detected:
 
 ```bash
-probe-rs run --chip RP2040 target/thumbv6m-none-eabi/debug/app
+lsusb
+```
+
+You should see something similar to:
+
+```
+Bus 001 Device 008: ID 2e8a:000c Raspberry Pi Debugprobe on Pico (CMSIS-DAP)
+```
+
+Verify communication with the target:
+
+```bash
+probe-rs info --chip RP2350
+```
+
+Expected output:
+
+```
+ARM Chip with debug port - Cortex-M33
+```
+
+If errors appear, they may be related to **USB permissions**.
+
+---
+
+# Building the Target Firmware
+
+You must be inside the Rust project directory.
+
+Example project structure:
+
+```
+blink-rust/
+ ├─ Cargo.toml
+ ├─ src/
+ └─ target/
+     └─ thumbv8m.main-none-eabihf/
+         └─ debug/
+             └─ blink-rust
+```
+
+Compile the firmware:
+
+```bash
+cargo build
+```
+
+This generates the ELF firmware at:
+
+```
+target/thumbv8m.main-none-eabihf/debug/blink-rust
 ```
 
 ---
 
-## Repository Structure
+# Flashing the Target Firmware
+
+Program the firmware using probe-rs:
+
+```bash
+probe-rs download target/thumbv8m.main-none-eabihf/debug/blink-rust --chip RP235x
+```
+
+Expected terminal output:
 
 ```
-pico-2w-rust-debugprobe
-│
-├── src
-├── Cargo.toml
-├── README.md
-│
-└── docs
-    └── images
-        └── hardware_setup.jpeg
+Erasing ✔ 100%
+Programming ✔ 100%
+Finished in ~2s
+```
+
+Reset the microcontroller:
+
+```bash
+probe-rs reset --chip RP235x
 ```
 
 ---
 
-## Future Improvements
+# Quick Run Command
 
-* Add wiring diagram (Fritzing)
-* RTT logging example
-* Step-by-step setup tutorial
-* Debugging benchmarks
+After building once, you can use:
+
+```bash
+probe-rs run target/thumbv8m.main-none-eabihf/debug/blink-rust --chip RP235x
+```
+
+This command will:
+
+* program the firmware
+* start execution
 
 ---
 
-## License
+# Faster Workflow with cargo tools
 
-MIT License
+Install probe-rs cargo tools:
+
+```bash
+cargo install probe-rs-tools
+```
+
+Flash directly with:
+
+```bash
+cargo flash --chip RP235x
+```
+
+This compiles and programs the firmware automatically.
+
+Another powerful option is:
+
+```bash
+cargo embed
+```
+
+This opens a debugging terminal and allows log capture using RTT / defmt.
