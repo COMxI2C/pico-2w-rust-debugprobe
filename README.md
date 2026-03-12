@@ -10,6 +10,7 @@ With SWD you can:
 * inspect memory
 * set breakpoints
 * capture logs (RTT / defmt)
+![Hardware Setup](docs/images/hardware_setup_pico.jpeg)
 
 In this setup:
 
