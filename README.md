@@ -1,16 +1,32 @@
-# Pico 2 Template
+# Raspberry Pi Pico 2W Debugging with Rust
 
-A Rust project template for Raspberry Pi Pico 2 (RP2350) development.
+This project demonstrates how to use **two Raspberry Pi Pico 2W (RP2350)** boards:
 
-## Usage
+- One as a **CMSIS-DAP Debug Probe**
+- One as the **Target MCU**
 
-Generate a new project:
+The firmware is written in **Rust using the Embassy async framework**, and flashing/debugging is performed using **probe-rs**.
 
-```sh
-cargo generate --git https://github.com/ImplFerris/pico2-template.git
-```
+---
 
-## Options
+# Hardware Required
 
-- HAL: Choose between Embassy (async) or rp-hal
-- defmt logging: Optional debugging support
+- 2 × Raspberry Pi Pico 2W (RP2350)
+
+One board will act as:
+
+- Debug probe
+
+The other board will act as:
+
+- Target MCU
+
+---
+
+# Flash Debug Probe Firmware
+
+Download the firmware:
+
+https://github.com/raspberrypi/debugprobe/releases
+
+Use the file:

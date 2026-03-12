@@ -24,10 +24,10 @@ async fn main(_spawner: Spawner) {
     let mut led = Output::new(p.PIN_6, Level::Low);
 
     loop{
-        info!("led on");
+        info!("led on debug probe");
         led.set_high();
         Timer::after_millis(1000).await;
-        info!("led off");
+        info!("led off debug probe");
         led.set_low();
         Timer::after_millis(1000).await;
     }   
