@@ -29,4 +29,34 @@ Download the firmware:
 
 https://github.com/raspberrypi/debugprobe/releases
 
-Use the file:
+Use the file: debugprobe_on_pico2.uf2
+
+
+Steps:
+
+1. Hold **BOOTSEL**
+2. Connect Pico to USB
+3. Drag the UF2 file into the mounted drive
+
+After flashing, the board will appear as a **CMSIS-DAP debug probe**.
+
+---
+
+# Wiring
+
+| Debug Probe | Target |
+|-------------|--------|
+| GP3 | SWDIO |
+| GP2 | SWCLK |
+| GND | GND |
+
+Both boards should be powered via **USB from the PC**.
+
+---
+
+# Install probe-rs
+
+Install probe-rs tools:
+
+```bash
+curl -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
