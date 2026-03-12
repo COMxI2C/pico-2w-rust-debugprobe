@@ -1,42 +1,43 @@
-# Raspberry Pi Pico 2W Debugging with Rust
+# pico-2w-rust-debugprobe
 
-This project demonstrates how to use **two Raspberry Pi Pico 2W (RP2350)** boards:
+Example project showing how to use **two Raspberry Pi Pico 2W (RP2350)** boards as:
 
-- One as a **CMSIS-DAP Debug Probe**
-- One as the **Target MCU**
+* **Debug Probe** (CMSIS-DAP)
+* **Target MCU**
 
-The firmware is written in **Rust using the Embassy async framework**, and flashing/debugging is performed using **probe-rs**.
+The firmware is written in **Rust using the Embassy async framework**, and flashing/debugging is done with **probe-rs**.
 
 ---
 
-# Hardware Required
+# Hardware
 
-- 2 × Raspberry Pi Pico 2W (RP2350)
+Required components:
 
-One board will act as:
+* 2 × Raspberry Pi Pico 2W (RP2350)
 
-- Debug probe
+One board acts as the **debug probe**, the other as the **target device**.
 
-The other board will act as:
-
-- Target MCU
+Both boards are connected to the PC via USB.
 
 ---
 
 # Flash Debug Probe Firmware
 
-Download the firmware:
+Download the firmware from:
 
 https://github.com/raspberrypi/debugprobe/releases
 
-Use the file: debugprobe_on_pico2.uf2
+Use the file:
 
+```
+debugprobe_on_pico2.uf2
+```
 
 Steps:
 
-1. Hold **BOOTSEL**
-2. Connect Pico to USB
-3. Drag the UF2 file into the mounted drive
+1. Hold the **BOOTSEL** button on the Pico.
+2. Connect it to the PC via USB.
+3. Drag the `.uf2` file to the mounted USB drive.
 
 After flashing, the board will appear as a **CMSIS-DAP debug probe**.
 
@@ -45,91 +46,138 @@ After flashing, the board will appear as a **CMSIS-DAP debug probe**.
 # Wiring
 
 | Debug Probe | Target |
-|-------------|--------|
-| GP3 | SWDIO |
-| GP2 | SWCLK |
-| GND | GND |
+| ----------- | ------ |
+| GP3         | SWDIO  |
+| GP2         | SWCLK  |
+| GND         | GND    |
 
-Both boards should be powered via **USB from the PC**.
+Both boards remain powered through their USB connections.
 
 ---
 
 # Install probe-rs
 
-Install probe-rs tools:
+Install the probe-rs tools:
 
 ```bash
 curl -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh
+```
 
-erify installation:
+Verify installation:
 
+```bash
 probe-rs --version
-Verify the Debug Probe
+```
 
-Check USB devices:
+---
 
+# Verify Debug Probe
+
+Check that the probe is detected:
+
+```bash
 lsusb
+```
 
-Expected output:
+Expected output example:
 
+```
 2e8a:000c Raspberry Pi Debugprobe on Pico (CMSIS-DAP)
-Verify Target Communication
+```
+
+---
+
+# Verify Target Connection
+
+```bash
 probe-rs info --chip RP2350
+```
 
 Expected output:
 
+```
 ARM Chip with debug port
 Cortex-M33
-Build Firmware
+```
 
-From the project directory:
+---
 
+# Build the Firmware
+
+From the project directory run:
+
+```bash
 cargo build
+```
 
-The firmware will be generated at:
+The compiled firmware will be generated at:
 
+```
 target/thumbv8m.main-none-eabihf/debug/pico-2w-rust-debugprobe
-Flash Firmware
+```
+
+---
+
+# Flash and Run
+
+Flash and run the firmware:
+
+```bash
 probe-rs run target/thumbv8m.main-none-eabihf/debug/pico-2w-rust-debugprobe --chip RP235x
+```
 
-Expected output:
+Expected terminal output:
 
+```
 Erasing ✔
 Programming ✔
 Finished
-Alternative: Cargo Integration
+```
 
-Install tools:
+---
 
+# Alternative Cargo Tools
+
+Install:
+
+```bash
 cargo install probe-rs-tools
+```
 
 Flash firmware:
 
+```bash
 cargo flash --chip RP235x
+```
 
-Or run with logging:
+Run with RTT logging:
 
+```bash
 cargo embed
-Example Firmware
+```
 
-The example firmware:
+---
 
-Uses Embassy async runtime
+# Common Issue
 
-Uses defmt RTT logging
+### Error
 
-Toggles an LED every 1.5 seconds
-
-Common Issue
-Error
+```
 interface is busy (errno 16)
+```
 
-Cause:
-
-Another process is already using the debug probe (RTT terminal or cargo embed).
+Cause: another process is already using the debug probe (for example a running RTT terminal).
 
 Solution:
 
-Close the RTT terminal or kill the process:
-
+```bash
 pkill probe-rs
+```
+
+or close the active debugging terminal.
+
+---
+
+# License
+
+MIT
