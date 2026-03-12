@@ -8,7 +8,7 @@ This repository documents the hardware setup, firmware, and debugging workflow.
 
 ## Hardware Setup
 
-![Hardware Setup](docs/images/hardware_setup.jpeg)
+![Hardware Setup](docs/images/hardware_setup_pico.jpeg)
 
 Two Pico boards are connected using the **SWD interface**.
 
