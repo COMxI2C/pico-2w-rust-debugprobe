@@ -1,4 +1,10 @@
-# pico-2w-rust-debugprobe
+# Pico 2W Rust Debug Probe
+
+Using two Raspberry Pi Pico 2W boards as Debug Probe and Target with Rust and probe-rs.
+
+## Hardware Setup
+
+![Hardware Setup](docs/images/hardware_setup.jpg)
 
 Example project showing how to use **two Raspberry Pi Pico 2W (RP2350)** boards as:
 
