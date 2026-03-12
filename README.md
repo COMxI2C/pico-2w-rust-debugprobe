@@ -20,7 +20,7 @@ One board acts as the **debug probe**, while the second board is the **target de
 
 You can download the compiled debug probe firmware here:
 
-LINK_AQUI
+https://github.com/raspberrypi/debugprobe/releases
 
 Flash the firmware into the Pico that will act as the **debug probe**.
 
