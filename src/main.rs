@@ -26,10 +26,10 @@ async fn main(_spawner: Spawner) {
     loop{
         info!("led on debug probe");
         led.set_high();
-        Timer::after_millis(1000).await;
+        Timer::after_millis(1500).await;
         info!("led off debug probe");
         led.set_low();
-        Timer::after_millis(1000).await;
+        Timer::after_millis(1500).await;
     }   
 }
 
