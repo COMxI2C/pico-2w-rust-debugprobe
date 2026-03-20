@@ -1,6 +1,7 @@
 # Pico 2W Rust Debug Probe
 
-This project shows how to build a **low-cost SWD debugging environment** using two **Raspberry Pi Pico 2W (RP2350)** boards. **Serial Wire Debug (SWD)** is the standard debugging interface used by ARM Cortex-M microcontrollers.
+This project shows how to build a **low-cost SWD debugging environment** using two **Raspberry Pi Pico 2W (RP2350)** boards. **Serial Wire Debug (SWD)** is the standard debugging interface used by ARM Cortex-M microcontrollers. Clone the repository to test the correct execution of the instructions and to ensure that the debug probe is working.
+
 With SWD you can:
 
 * flash firmware
